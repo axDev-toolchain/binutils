@@ -368,7 +368,8 @@ check_PROGRAMS = object_unittest$(EXEEXT) binary_unittest$(EXEEXT) \
 @DEFAULT_TARGET_ARM_TRUE@am__append_38 = arm_abs_global.sh \
 @DEFAULT_TARGET_ARM_TRUE@	arm_branch_in_range.sh \
 @DEFAULT_TARGET_ARM_TRUE@	arm_branch_out_of_range.sh \
-@DEFAULT_TARGET_ARM_TRUE@	arm_fix_v4bx.sh arm_cortex_a8.sh
+@DEFAULT_TARGET_ARM_TRUE@	arm_fix_v4bx.sh arm_cortex_a8.sh \
+@DEFAULT_TARGET_ARM_TRUE@	arm_exidx_test.sh
 @DEFAULT_TARGET_ARM_TRUE@am__append_39 = arm_abs_global.stdout \
 @DEFAULT_TARGET_ARM_TRUE@	arm_bl_in_range.stdout \
 @DEFAULT_TARGET_ARM_TRUE@	arm_bl_out_of_range.stdout \
@@ -389,7 +390,8 @@ check_PROGRAMS = object_unittest$(EXEEXT) binary_unittest$(EXEEXT) \
 @DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_bl.stdout \
 @DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_blx.stdout \
 @DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_local.stdout \
-@DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_local_reloc.stdout
+@DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_local_reloc.stdout \
+@DEFAULT_TARGET_ARM_TRUE@	arm_exidx_test.stdout
 @DEFAULT_TARGET_ARM_TRUE@am__append_40 = arm_abs_global \
 @DEFAULT_TARGET_ARM_TRUE@	arm_bl_in_range arm_bl_out_of_range \
 @DEFAULT_TARGET_ARM_TRUE@	thumb_bl_in_range \
@@ -406,7 +408,8 @@ check_PROGRAMS = object_unittest$(EXEEXT) binary_unittest$(EXEEXT) \
 @DEFAULT_TARGET_ARM_TRUE@	arm_no_fix_v4bx arm_cortex_a8_b_cond \
 @DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_b arm_cortex_a8_bl \
 @DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_blx arm_cortex_a8_local \
-@DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_local_reloc
+@DEFAULT_TARGET_ARM_TRUE@	arm_cortex_a8_local_reloc \
+@DEFAULT_TARGET_ARM_TRUE@	arm_exidx_test.so
 subdir = testsuite
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -1465,7 +1468,9 @@ host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
+install_as_default = @install_as_default@
 install_sh = @install_sh@
+installed_linker = @installed_linker@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
@@ -3648,6 +3653,15 @@ uninstall-am:
 @DEFAULT_TARGET_ARM_TRUE@	../ld-new -o $@ $<
 
 @DEFAULT_TARGET_ARM_TRUE@arm_cortex_a8_local_reloc.o: arm_cortex_a8_local_reloc.s
+@DEFAULT_TARGET_ARM_TRUE@	$(TEST_AS) -o $@ $<
+
+@DEFAULT_TARGET_ARM_TRUE@arm_exidx_test.stdout: arm_exidx_test.so
+@DEFAULT_TARGET_ARM_TRUE@	$(TEST_READELF) -S $< > $@
+
+@DEFAULT_TARGET_ARM_TRUE@arm_exidx_test.so: arm_exidx_test.o ../ld-new
+@DEFAULT_TARGET_ARM_TRUE@	../ld-new -shared -o $@ $<
+
+@DEFAULT_TARGET_ARM_TRUE@arm_exidx_test.o: arm_exidx_test.s
 @DEFAULT_TARGET_ARM_TRUE@	$(TEST_AS) -o $@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
