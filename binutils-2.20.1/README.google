@@ -161,3 +161,10 @@ gas/config/tc-arm.c
   Owner: jingyu
   Fix neon register alias case sensitivity.
   http://sourceware.org/ml/binutils/2010-08/msg00330.html
+
+gas/as.c
+  Status: local
+  Owner: dougkwan
+  g4 integrate CL 28729-p2.
+  Ignore --save-temps flag (to enable use of the GNU assembler with a
+  compiler that passes --save-temps for MAO).
