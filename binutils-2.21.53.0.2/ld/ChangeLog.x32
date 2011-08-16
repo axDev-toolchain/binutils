@@ -1,0 +1,3 @@
+2011-06-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* configure.tgt: Support x32.
