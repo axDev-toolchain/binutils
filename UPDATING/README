@@ -1,0 +1,21 @@
+Upstream gold contains 2 patches that break Android builds.
+With them in place, Android will boot up to init, but then vital
+system processes crash on startup, causing the system to reboot
+into recovery instantly.
+
+From just a quick look at the patches, it appears they rearrange
+the .interp section in a way that confuses some Android specific
+tool (soslim?) in a way that causes it to strip the interp section,
+causing any dynamically linked application to fail. (This is based
+on just a quick look, and could turn out to be wrong.)
+
+Until this is fixed in the right place, reverting those 2 patches
+doesn't break things badly.
+
+The files in this directory are:
+binutils-break-android*.patch: The commits that break Android
+
+binutils-2.22-revert-patches-breaking-android.patch: Patch reverting
+those commits for 2.22 (already applied in this repository)
+
+README: Highly confidential file of totally unknowable purpose.

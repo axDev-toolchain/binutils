@@ -3938,9 +3938,12 @@ Script_sections::create_note_and_tls_segments(
 	}
 
       // If we are making a shared library, and we see a section named
-      // .interp then put the .interp section in a PT_INTERP segment.
-      // This is for GNU ld compatibility.
-      if (strcmp((*p)->name(), ".interp") == 0)
+      // .interp, and the -dynamic-linker option was not used, then
+      // put the .interp section in a PT_INTERP segment.  This is for
+      // GNU ld compatibility.
+      if (strcmp((*p)->name(), ".interp") == 0
+	  && parameters->options().shared()
+	  && parameters->options().dynamic_linker() == NULL)
 	{
 	  elfcpp::Elf_Word seg_flags =
 	    Layout::section_flags_to_segment((*p)->flags());
