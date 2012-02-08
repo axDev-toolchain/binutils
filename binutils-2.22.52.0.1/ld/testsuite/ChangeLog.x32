@@ -1,0 +1,6 @@
+2011-06-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-elf/eh1.d: Skip x32.
+	* ld-elf/eh2.d: Likewise.
+	* ld-elf/eh3.d: Likewise.
+	* ld-elf/eh4.d: Likewise.
