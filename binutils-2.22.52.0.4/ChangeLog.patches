@@ -1,0 +1,750 @@
+bfd/
+
+2006-10-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/3351
+	* elflink.c (_bfd_elf_update_dynamic_flags): New.
+	(_bfd_elf_merge_symbol): Update both real and indirect symbol
+	dynamic flags.
+	(_bfd_elf_add_default_symbol): Make the real symbol dynamic if
+	the indirect symbol is defined in a shared library.
+	(elf_link_add_object_symbols): Likewise.  If the indirect
+	symbol has been forced local, don't make the real symbol
+	dynamic.
+	(elf_link_check_versioned_symbol): Check indirect symbol.
+	(elf_link_output_extsym): Use real symbol definition when
+	reporting indirect symbol error.  Check version info for
+	dynamic versioned symbol.
+
+ld/testsuite/
+
+2011-09-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13195
+	* ld-elf/pr13195.d: New.
+	* ld-elf/pr13195.s: Likewise.
+	* ld-elf/pr13195.t: Likewise.
+
+2006-10-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/3351
+	* ld-elf/indirect.exp: New file.
+	* ld-elf/indirect1a.c: Likewise.
+	* ld-elf/indirect1b.c: Likewise.
+	* ld-elf/indirect1c.c: Likewise.
+	* ld-elf/indirect2.c: Likewise.
+	* ld-elf/indirect3.out: Likewise.
+	* ld-elf/indirect3a.c: Likewise.
+	* ld-elf/indirect3b.c: Likewise.
+	* ld-elf/indirect3c.c: Likewise.
+	* ld-elf/indirect4.out: Likewise.
+	* ld-elf/indirect4a.c: Likewise.
+	* ld-elf/indirect4b.c: Likewise.
+	* ld-elf/indirect4c.c: Likewise.
+
+diff --git a/bfd/elflink.c b/bfd/elflink.c
+index 5d181f7..da6a68c 100644
+bfd/
+
+2009-12-12  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elf.c: Fix shadowed variable warnings.
+	* elf64-x86-64.c: Likewise.
+	* elflink.c: Likewise.
+
+2007-01-23  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elf-bfd.h (_bfd_elf_sharable_com_section): New.
+	(_bfd_elf_add_sharable_symbol): Likewise.
+	(_bfd_elf_sharable_section_from_bfd_section): Likewise.
+	(_bfd_elf_sharable_symbol_processing): Likewise.
+	(_bfd_elf_sharable_common_definition): Likewise.
+	(_bfd_elf_sharable_common_section_index): Likewise.
+	(_bfd_elf_sharable_common_section): Likewise.
+	(_bfd_elf_sharable_merge_symbol): Likewise.
+
+	* elf.c (special_sections_g): Add ".gnu.linkonce.shrb" and
+	".gnu.linkonce.shrd".
+	(special_sections_s): Add ".sharable_bss" and ".sharable_data".
+	(get_program_header_size): Handle PT_GNU_SHR segment.
+	(_bfd_elf_map_sections_to_segments): Likewise.
+	(assign_file_positions_for_load_sections): Likewise.
+
+	* elf32-i386.c (elf_i386_link_hash_table): Add sdynsharablebss
+	and srelsharablebss fields.
+	(elf_i386_link_hash_table_create): Initialize sdynsharablebss
+	and srelsharablebss.
+	(elf_i386_create_dynamic_sections): Handle sdynsharablebss and
+	srelsharablebss.
+	(elf_i386_adjust_dynamic_symbol): Likewise.
+	(elf_i386_size_dynamic_sections): Likewise.
+	(elf_i386_finish_dynamic_symbol): Likewise.
+	(elf_backend_add_symbol_hook): Defined.
+	(elf_backend_section_from_bfd_section): Likewise.
+	(elf_backend_symbol_processing): Likewise.
+	(elf_backend_common_section_index): Likewise.
+	(elf_backend_common_section): Likewise.
+	(elf_backend_common_definition): Likewise.
+	(elf_backend_merge_symbol): Likewise.
+
+	* elf64-x86-64.c (elf64_x86_64_link_hash_table): Add
+	sdynsharablebss and srelsharablebss fields.
+	(elf64_x86_64_link_hash_table_create): Initialize sdynsharablebss
+	and srelsharablebss.
+	(elf64_x86_64_create_dynamic_sections): Handle sdynsharablebss
+	and srelsharablebss.
+	(elf64_x86_64_adjust_dynamic_symbol): Likewise.
+	(elf64_x86_64_size_dynamic_sections): Likewise.
+	(elf64_x86_64_finish_dynamic_symbol): Likewise.
+	(elf64_x86_64_add_symbol_hook): Handle sharable symbols.
+	(elf64_x86_64_elf_section_from_bfd_section): Likewise.
+	(elf64_x86_64_symbol_processing): Likewise.
+	(elf64_x86_64_merge_symbol): Likewise.
+	(elf64_x86_64_common_definition): Handle sharable sections.
+	(elf64_x86_64_common_section_index): Likewise.
+	(elf64_x86_64_common_section): Likewise.
+
+	* elflink.c (_bfd_elf_create_dynamic_sections): Handle
+	.dynsharablebss section.
+	(_bfd_elf_sharable_com_section): New.
+	(get_sharable_common_section): Likewise.
+	(_bfd_elf_add_sharable_symbol): Likewise.
+	(_bfd_elf_sharable_section_from_bfd_section): Likewise.
+	(_bfd_elf_sharable_symbol_processing): Likewise.
+	(_bfd_elf_sharable_common_definition): Likewise.
+	(_bfd_elf_sharable_common_section_index): Likewise.
+	(_bfd_elf_sharable_common_section): Likewise.
+	(_bfd_elf_sharable_merge_symbol): Likewise.
+
+	* elfnn-ia64.c (elfNN_ia64_add_symbol_hook): Handle sharable
+	symbols.
+	(elf_backend_add_symbol_hook): Defined.
+	(elf_backend_section_from_bfd_section): Likewise.
+	(elf_backend_symbol_processing): Likewise.
+	(elf_backend_common_section_index): Likewise.
+	(elf_backend_common_section): Likewise.
+	(elf_backend_common_definition): Likewise.
+	(elf_backend_merge_symbol): Likewise.
+
+binutils/
+
+2007-01-04  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* readelf.c (dump_relocations): Handle sharable sections.
+	(get_segment_type): Handle sharable segment.
+	(get_symbol_index_type): Handle sharable sections.
+
+gas/
+
+2007-01-04  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* config/obj-elf.c (obj_elf_sharable_common): New.
+	(elf_pseudo_table): Add "sharable_common".
+	(obj_elf_change_section): Handle sharable sections.
+
+include/
+
+2007-01-23  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* bfdlink.h (bfd_link_info): Add sharable_sections.
+
+include/elf/
+
+2007-01-04  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* common.h (PT_GNU_SHR): New.
+	(SHF_GNU_SHARABLE): Likewise.
+	(SHN_GNU_SHARABLE_COMMON): Likewise.
+
+ld/
+
+2011-01-08  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* emulparams/elf32_x86_64.sh (SHARABLE_SECTIONS): Set to yes.
+
+2007-01-04  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* emulparams/elf64_ia64.sh (SHARABLE_SECTIONS): Set to yes.
+	* emulparams/elf_i386.sh (SHARABLE_SECTIONS): Likewise.
+	* emulparams/elf_x86_64.sh (SHARABLE_SECTIONS): Likewise.
+
+	* emultempl/elf32.em (gld${EMULATION_NAME}_before_parse): Set
+	link_info.sharable_sections based on $SHARABLE_SECTIONS.
+	(gld${EMULATION_NAME}_place_orphan): Don't allow orphaned
+	sharable sections.
+
+	* ldmain.c (main): Initialize link_info.sharable_sections.
+	* scripttempl/elf.sc: Support sharable sections.
+
+diff --git a/bfd/elf-bfd.h b/bfd/elf-bfd.h
+index d6e2ab2..8660802 100644
+bfd/
+
+2011-01-12  Bernhard Rosenkränzer <bernhard.rosenkranzer@linaro.org>
+
+	* elf32-epiphany.c (epiphany_elf_relocate_section): Add an
+	argument for error ignored.
+	* elf32-rl78.c (rl78_elf_relocate_section): Likewise.
+	* elf32-tilepro.c (tilepro_elf_relocate_section): Likewise.
+	* elfxx-tilegx.c (tilegx_elf_relocate_section): Likewise.
+	
+2010-07-01  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elf-bfd.h (RELOC_FOR_GLOBAL_SYMBOL): Silence unused warning
+	on ignored.
+
+	* elf32-tic6x.c (elf32_tic6x_relocate_section): Add an argument for
+	error ignored.
+	
+2007-07-03  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/4409
+	* elf-bfd.h (RELOC_FOR_GLOBAL_SYMBOL): Add an argument for
+	error ignored.
+	* elf-m10200.c (mn10200_elf_relocate_section): Updated.
+	* elf-m10300.c (mn10300_elf_relocate_section): Likewise.
+	* elf32-arm.c (elf32_arm_relocate_section): Likewise.
+	* elf32-avr.c (elf32_avr_relocate_section): Likewise.
+	* elf32-bfin.c (bfinfdpic_relocate_section): Likewise.
+	(bfin_relocate_section): Likewise.
+	* elf32-cr16.c (elf32_cr16_relocate_section): Likewise.
+	* elf32-cr16c.c (elf32_cr16c_relocate_section): Likewise.
+	* elf32-cris.c (cris_elf_relocate_section): Likewise.
+	* elf32-crx.c (elf32_crx_relocate_section): Likewise.
+	* elf32-d10v.c (elf32_d10v_relocate_section): Likewise.
+	* elf32-fr30.c (fr30_elf_relocate_section): Likewise.
+	* elf32-frv.c (elf32_frv_relocate_section): Likewise.
+	* elf32-h8300.c (elf32_h8_relocate_section): Likewise.
+	* elf32-hppa.c (elf32_hppa_relocate_section): Likewise.
+	* elf32-i386.c (elf_i386_relocate_section): Likewise.
+	* elf32-i860.c (elf32_i860_relocate_section): Likewise.
+	* elf32-ip2k.c (ip2k_elf_relocate_section): Likewise.
+	* elf32-iq2000.c (iq2000_elf_relocate_section): Likewise.
+	* elf32-lm32.c (lm32_elf_relocate_section): Likewise.
+	* elf32-m68hc1x.c (elf32_m68hc11_relocate_section): Likewise.
+	* elf32-m68k.c (elf_m68k_relocate_section): Likewise.
+	* elf32-microblaze.c (microblaze_elf_relocate_section): Likewise.
+	* elf32-mcore.c (mcore_elf_relocate_section): Likewise.
+	* elf32-mep.c (mep_elf_relocate_section): Likewise.
+	* elf32-moxie.c (moxie_elf_relocate_section): Likewise.
+	* elf32-msp430.c (elf32_msp430_relocate_section): Likewise.
+	* elf32-mt.c (mt_elf_relocate_section): Likewise.
+	* elf32-openrisc.c (openrisc_elf_relocate_section): Likewise.
+	* elf32-ppc.c (ppc_elf_relocate_section): Likewise.
+	* elf32-rx.c (rx_elf_relocate_section): Likewise.
+	* elf32-s390.c (elf_s390_relocate_section): Likewise.
+	* elf32-v850.c (v850_elf_relocate_section): Likewise.
+	* elf32-vax.c (elf_vax_relocate_section): Likewise.
+	* elf32-xc16x.c (elf32_xc16x_relocate_section): Likewise.
+	* elf32-xstormy16.c (xstormy16_elf_relocate_section): Likewise.
+	* elf32-xtensa.c (elf_xtensa_relocate_section): Likewise.
+	* elf64-alpha.c (elf64_alpha_relocate_section): Likewise.
+	* elf64-mmix.c (mmix_elf_relocate_section): Likewise.
+	* elf64-ppc.c (ppc64_elf_relocate_section): Likewise.
+	* elf64-s390.c (elf_s390_relocate_section): Likewise.
+	* elf64-x86-64.c (elf64_x86_64_relocate_section): Likewise.
+	* elfxx-sparc.c (_bfd_sparc_elf_relocate_section): Likewise.
+
+	* elfnn-ia64.c (elfNN_ia64_relocate_section): Skip if error
+	from RELOC_FOR_GLOBAL_SYMBOL in executable is ignored.
+
+ld/
+
+2007-07-03  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/4409
+	* ldmain.c (how_to_report_unresolved_symbols): New.
+	(main): Set link_info.unresolved_syms_in_objects and
+	link_info.unresolved_syms_in_shared_libs if they aren't set
+	yet.
+
+	* ldmain.h (how_to_report_unresolved_symbols): New.
+
+	* lexsup.c (how_to_report_unresolved_symbols): Removed.
+	(parse_args): Set link_info.pie to FALSE for -shared. Don't
+	set default values for link_info.unresolved_syms_in_objects nor
+	link_info.unresolved_syms_in_shared_libs.
+
+ld/testsuite/
+
+2007-07-03  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/4409
+	* ld-ia64/error1.d: New file.
+	* ld-ia64/error1.s: Likewise.
+	* ld-ia64/error2.d: Likewise.
+	* ld-ia64/error3.d: Likewise.
+	* ld-ia64/error4.d: Likewise.
+
+diff --git a/bfd/elf-bfd.h b/bfd/elf-bfd.h
+index c7846e1..7d047e8 100644
+diff --git a/binutils/ChangeLog.addend b/binutils/ChangeLog.addend
+new file mode 100644
+index 0000000..e0bd096
+bfd/
+
+2007-07-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elflink.c (elf_link_add_object_symbols): Check symbol type
+	for symbol alias in a dynamic object.
+
+ld/testsuite/
+
+2007-07-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-elf/data2.c: New.
+	* ld-elf/weakdef1.c: Likewise.
+
+	* ld-elf/shared.exp: Add tests for libdata2 and weakdef1.
+
+2008-03-12  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elf.c (assign_section_numbers): Check if number of sections
+	>= SHN_LORESERVE.
+	* elfcode.h (elf_object_p): Likewise.
+
+bfd/
+
+2011-10-16  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* plugin.c (add_symbols): Call
+	bfd_plugin_get_symbols_in_object_only.
+	(bfd_plugin_get_symtab_upper_bound): Don't call
+	bfd_plugin_get_symbols_in_object_only.
+
+2011-10-16  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* plugin.c (bfd_plugin_get_symbols_in_object_only): Optimized.
+
+2011-10-16  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* plugin.c (bfd_plugin_get_symbols_in_object_only): Properly
+	remove the object only section file.
+
+2011-10-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13298
+	* opncls.c (bfd_extract_object_only_section): New.
+
+	* plugin.c (add_symbols): Initialize object_only_syms and
+	object_only_nsyms.
+	(bfd_plugin_fake_text_section): New.
+	(bfd_plugin_fake_common_section): Likewise.
+	(bfd_plugin_get_symbols_in_object_only): Likewise.
+	(bfd_plugin_get_symtab_upper_bound): Call
+	bfd_plugin_get_symbols_in_object_only and add symbols from
+	object only section.
+	(bfd_plugin_canonicalize_symtab): Remove fake_section and
+	fake_common_section.  Use bfd_plugin_fake_text_section and
+	bfd_plugin_fake_common_section.  Set udata.p to NULL.  Copy
+	symbols from object only section.
+
+	* plugin.h (plugin_data_struct): Add object_only_nsyms and
+	object_only_syms.
+
+	* bfd-in2.h: Regenerated.
+
+2011-05-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12758
+	* elflink.c (elf_link_add_archive_symbols): Don't load the IR
+	archive member twice.
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* bfd.c (bfd_lto_object_type): New.
+	(bfd): Add object_only_section and lto_type.
+	(bfd_group_signature): New.
+
+	* elf.c (special_sections_g): Add .gnu_object_only.
+
+	* format.c (bfd_set_lto_type): New.
+	(bfd_check_format_matches): Use it.
+
+	* section.c (GNU_OBJECT_ONLY_SECTION_NAME): New.
+
+	* bfd-in2.h: Regenerated.
+
+binutils/
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* objcopy.c (group_signature): Removed.
+	(is_strip_section): Replace group_signature with
+	bfd_group_signature.
+	(setup_section): Likewise.
+
+	* readelf.c (get_section_type_name): Handle SHT_GNU_OBJECT_ONLY.
+
+gas/testsuite/
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* gas/elf/section9.s: Add the .gnu_object_only test.
+	* gas/elf/section9.d: Updated.
+
+include/
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* bfdlink.h (bfd_link_info): Add emit_gnu_object_only and
+	emitting_gnu_object_only.
+
+include/elf/
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* common.h (SHT_GNU_OBJECT_ONLY): New.
+
+ld/
+
+2011-10-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13298
+	* ldlang.c (cmdline_extract_object_only_section): Call
+	bfd_extract_object_only_section.
+
+2011-05-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ldlang.c (cmdline_remove_object_only_files): Return if
+	ENABLE_PLUGINS is undefined or plugin_save_temps is true.
+
+2011-05-15  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* lexsup.c (option_values): Add OPTION_PLUGIN_SAVE_TEMPS.
+	(ld_options): Add -plugin-save-temps.
+	(parse_args): Handle OPTION_PLUGIN_SAVE_TEMPS.
+
+	* plugin.c (plugin_save_temps): New.
+	(plugin_call_cleanup): Don't call plugin cleanup_handler if
+	plugin_save_temps is true.
+
+	* plugin.h (plugin_save_temps): New.
+
+2011-05-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12760
+	* ldmain.c (warning_callback): Don't warn plugin dummy.
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* emultempl/alphaelf.em (alpha_finish): Replace finish_default
+	with gld${EMULATION_NAME}_finish.
+
+	* emultempl/armelf.em (gld${EMULATION_NAME}_finish): Renamed
+	to ...
+	(arm_finish): This.  Replace finish_default with
+	gld${EMULATION_NAME}_finish.
+	(LDEMUL_FINISH): Set to arm_finish.
+
+	* emultempl/elf32.em (gld${EMULATION_NAME}_finish): New.
+	(orphan_init_done): Likewise.
+	(ld_${EMULATION_NAME}_emulation): Use gld${EMULATION_NAME}_finish.
+	(gld${EMULATION_NAME}_place_orphan): Initialize hold.
+
+	* emultempl/ppc64elf.em (gld${EMULATION_NAME}_finish): Renamed
+	to ...
+	(ppc_finish): This.  Replace finish_default with
+	gld${EMULATION_NAME}_finish.
+	(LDEMUL_FINISH): Set to ppc_finish.
+
+	* emultempl/spuelf.em (gld${EMULATION_NAME}_finish): Renamed
+	to ...
+	(spu_finish): This.  Replace finish_default with
+	gld${EMULATION_NAME}_finish.
+	(LDEMUL_FINISH): Set to spu_finish.
+
+	* ldfile.c (ldfile_try_open_bfd): Call
+	cmdline_check_object_only_section.
+
+	* ldlang.c: Include "ldwrite.h" and elf-bfd.h.
+	* ldlang.c (cmdline_object_only_file_list): New.
+	(cmdline_object_only_archive_list): Likewise.
+	(cmdline_temp_object_only_list): Likewise.
+	(cmdline_lists_init): Likewise.
+	(cmdline_list_new): Likewise.
+	(cmdline_list_append): Likewise.
+	(print_cmdline_list): Likewise.
+	(cmdline_on_object_only_archive_list_p): Likewise.
+	(cmdline_object_only_list_append): Likewise.
+	(cmdline_get_object_only_input_files): Likewise.
+	(cmdline_arg): Likewise.
+	(setup_section): Likewise.
+	(copy_section): Likewise.
+	(cmdline_fopen_temp): Likewise.
+	(cmdline_add_object_only_section): Likewise.
+	(cmdline_emit_object_only_section): Likewise.
+	(cmdline_extract_object_only_section): Likewise.
+	(cmdline_check_object_only_section): Likewise.
+	(cmdline_remove_object_only_files): Likewise.
+	(lang_init): Take a bfd_boolean argument to supprt object-only
+	output.  Call cmdline_lists_init.
+	(load_symbols): Call cmdline_on_object_only_archive_list_p
+	to check if an archive member should be loaded.
+	(lang_process): Handle object-only link.
+
+	* ldlang.h (lang_init): Take a bfd_boolean argument.
+	(cmdline_enum_type): New.
+	(cmdline_header_type): Likewise.
+	(cmdline_file_type): Likewise.
+	(cmdline_bfd_type): Likewise.
+	(cmdline_union_type): Likewise.
+	(cmdline_list_type): Likewise.
+	(cmdline_emit_object_only_section): Likewise.
+	(cmdline_check_object_only_section): Likewise.
+	(cmdline_remove_object_only_files): Likewise.
+
+	* ldmain.c (main): Call xatexit with
+	cmdline_remove_object_only_files.  Pass FALSE to lang_init.
+	Use ld_parse_linker_script.  Set link_info.output_bfd to NULL
+	after close.  Call cmdline_emit_object_only_section if needed.
+	(add_archive_element): Call cmdline_check_object_only_section.
+	(ld_parse_linker_script): New.
+
+	* ldmain.h (ld_parse_linker_script): New.
+
+	* plugin.c (plugin_opt_plugin_arg): Ignore -pass-through=.
+	(plugin_maybe_claim): Call cmdline_check_object_only_section
+	on claimed IR files.
+
+	* scripttempl/armbpabi.sc: Also discard .gnu_object_only
+	sections.
+	* scripttempl/elf.sc: Likewise.
+	* scripttempl/elf32sh-symbian.sc: Likewise.
+	* scripttempl/elf64hppa.sc: Likewise.
+	* scripttempl/elfxtensa.sc: Likewise.
+	* scripttempl/mep.sc: Likewise.
+	* scripttempl/pe.sc: Likewise.
+	* scripttempl/pep.sc: Likewise.
+
+ld/testsuite/
+
+2011-10-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13287
+	* ld-plugin/lto.exp (lto_link_tests): Add a test for PR ld/13287.
+
+	* ld-plugin/pr13287.cc: New.
+
+2011-10-07  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13229
+	PR ld/13244
+	* ld-plugin/lto.exp (lto_link_elf_tests): Add tests for PRs
+	ld/13229 and ld/13244.
+
+	* ld-plugin/pr13229.cc: New.
+	* ld-plugin/pr13229.d: Likewise.
+	* ld-plugin/pr13244.c: Likewise.
+	* ld-plugin/pr13244.d: Likewise.
+
+2011-09-23  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13201
+	* ld-plugin/lto.exp (lto_link_tests): Add a test for PR ld/13201.
+	(lto_run_tests): Likewise.
+
+	* ld-plugin/pr13201.c: New.
+	* ld-plugin/pr13201.out: Likewise.
+
+2011-09-16  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12975
+	* ld-plugin/lto.exp (lto_link_elf_tests): Add a test for PR
+	ld/12975.
+
+	* ld-plugin/pr12975.c: New.
+	* ld-plugin/pr12975.d: Likewise.
+	* ld-plugin/pr12975.t: Likewise.
+
+2011-09-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13183
+	* ld-plugin/lto.exp (lto_link_tests): Add tests for PR ld/13183.
+	(lto_link_symbol_tests): Likewise.
+
+	* ld-plugin/pr13183.d: New.
+	* ld-plugin/pr13183a.c: Likewise.
+	* ld-plugin/pr13183b.c: Likewise.
+
+	* lib/ld-lib.exp (ar_simple_create): Pass -rc to ar.
+
+2011-08-09  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/13066
+	* ld-plugin/lto.exp (lto_run_tests): Add a test for PR ld/13066.
+
+	* ld-plugin/pr13066.cc: New.
+	* ld-plugin/pr13066.out: Likewise.
+
+2011-07-11  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12942
+	* ld-plugin/lto.exp (lto_link_elf_tests): Add a test for PR
+	ld/12982.
+
+	* ld-plugin/pr12982.c: New.
+	* ld-plugin/pr12982.d: Likewise.
+
+2011-07-09  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12942
+	* ld-plugin/lto.exp (lto_link_tests): Add tests for PR ld/12942.
+	(lto_run_tests): Likewise.
+	Add "PR ld/12942 (3)" test.
+
+	* ld-plugin/pr12942.out: New.
+	* ld-plugin/pr12942a.cc: Likewise.
+	* ld-plugin/pr12942a.h: Likewise.
+	* ld-plugin/pr12942b.cc: Likewise.
+	* ld-plugin/pr12942c.cc: Likewise.
+
+2011-06-29  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-plugin/lto.exp (lto_link_elf_tests): Add 2 LTO ELF DSO 
+	tests.
+
+	* ld-plugin/lto-17a.c: New.
+	* ld-plugin/lto-17a.d: Likewise.
+	* ld-plugin/lto-17b-1.d: Likewise.
+	* ld-plugin/lto-17b-2.d: Likewise.
+	* ld-plugin/lto-17b.c: Likewise.
+
+2011-06-29  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-plugin/lto.exp (lto_link_elf_tests): Add 2 LTO ELF DSO 
+	tests.
+
+	* ld-plugin/lto-17a.c: New.
+	* ld-plugin/lto-17a.d: Likewise.
+	* ld-plugin/lto-17b-1.d: Likewise.
+	* ld-plugin/lto-17b-2.d: Likewise.
+	* ld-plugin/lto-17b.c: Likewise.
+
+2011-06-29  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-plugin/lto.exp (lto_run_elf_tests): Add "LTO TLS IE".
+
+	* ld-plugin/run-ie.c: New.
+	* ld-plugin/run-ie.out: Likewise.
+
+2011-05-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12760
+	* ld-plugin/lto.exp (lto_link_tests): Add tests for PR ld/12760.
+
+	* ld-plugin/pr12760a.s: New.
+	* ld-plugin/pr12760b.c: Likewise.
+
+2011-05-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/12758
+	* ld-plugin/lto.exp (lto_link_tests): Add tests for PR ld/12758.
+
+	* ld-plugin/pr12758a.s: New.
+	* ld-plugin/pr12758b.c: Likewise.
+
+2011-05-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-plugin/lto.exp (lto_link_symbol_tests): Replace "-e foo"
+	with "-Wl,-e,foo".
+
+2011-04-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-plugin/dummy.c: New.
+	* ld-plugin/dummy.s: Likewise.
+	* ld-plugin/func1p.c: Likewise.
+	* ld-plugin/func2i.c: Likewise.
+	* ld-plugin/func3h.c: Likewise.
+	* ld-plugin/lto-10.out: Likewise.
+	* ld-plugin/lto-10a.c: Likewise.
+	* ld-plugin/lto-10b.c: Likewise.
+	* ld-plugin/lto-10r.d: Likewise.
+	* ld-plugin/lto-11.out: Likewise.
+	* ld-plugin/lto-11a.c: Likewise.
+	* ld-plugin/lto-11b.c: Likewise.
+	* ld-plugin/lto-11c.c: Likewise.
+	* ld-plugin/lto-12.out: Likewise.
+	* ld-plugin/lto-12a.c: Likewise.
+	* ld-plugin/lto-12b.c: Likewise.
+	* ld-plugin/lto-12c.c: Likewise.
+	* ld-plugin/lto-13.out: Likewise.
+	* ld-plugin/lto-13a.c: Likewise.
+	* ld-plugin/lto-13b.c: Likewise.
+	* ld-plugin/lto-13c.c: Likewise.
+	* ld-plugin/lto-14.out: Likewise.
+	* ld-plugin/lto-14a.c: Likewise.
+	* ld-plugin/lto-14b.c: Likewise.
+	* ld-plugin/lto-14c.c: Likewise.
+	* ld-plugin/lto-15.out: Likewise.
+	* ld-plugin/lto-15a.c: Likewise.
+	* ld-plugin/lto-15b.c: Likewise.
+	* ld-plugin/lto-16a.c: Likewise.
+	* ld-plugin/lto-16a.d: Likewise.
+	* ld-plugin/lto-16b.c: Likewise.
+	* ld-plugin/lto-16b.d: Likewise.
+	* ld-plugin/lto-1a.c: Likewise.
+	* ld-plugin/lto-1b.c: Likewise.
+	* ld-plugin/lto-2.c: Likewise.
+	* ld-plugin/lto-3.d: Likewise.
+	* ld-plugin/lto-3.out: Likewise.
+	* ld-plugin/lto-3a.c: Likewise.
+	* ld-plugin/lto-3b.c: Likewise.
+	* ld-plugin/lto-3c.c: Likewise.
+	* ld-plugin/lto-3r.d: Likewise.
+	* ld-plugin/lto-4.out: Likewise.
+	* ld-plugin/lto-4a.c: Likewise.
+	* ld-plugin/lto-4b.c: Likewise.
+	* ld-plugin/lto-4c.c: Likewise.
+	* ld-plugin/lto-4r-a.d: Likewise.
+	* ld-plugin/lto-4r-b.d: Likewise.
+	* ld-plugin/lto-4r-c.d: Likewise.
+	* ld-plugin/lto-4r-d.d: Likewise.
+	* ld-plugin/lto-5.d: Likewise.
+	* ld-plugin/lto-5.out: Likewise.
+	* ld-plugin/lto-5a.c: Likewise.
+	* ld-plugin/lto-5b.c: Likewise.
+	* ld-plugin/lto-5r.d: Likewise.
+	* ld-plugin/lto-6.c: Likewise.
+	* ld-plugin/lto-7.out: Likewise.
+	* ld-plugin/lto-7a.c: Likewise.
+	* ld-plugin/lto-7b.c: Likewise.
+	* ld-plugin/lto-7c.c: Likewise.
+	* ld-plugin/lto-7d.c: Likewise.
+	* ld-plugin/lto-8.out: Likewise.
+	* ld-plugin/lto-8a.c: Likewise.
+	* ld-plugin/lto-8b.c: Likewise.
+	* ld-plugin/lto-9.cc: Likewise.
+	* ld-plugin/lto-9.d: Likewise.
+	* ld-plugin/lto.exp: Likewise.
+	* ld-plugin/pr12365a.c: Likewise.
+	* ld-plugin/pr12365b.c: Likewise.
+	* ld-plugin/pr12365c.c: Likewise.
+	* ld-plugin/pr12696-1.cc: Likewise.
+
+	* ld-plugin/plugin.exp: Add object files for symbols claimed
+	or created by testplugin.
+
+	* lib/ld-lib.exp (check_lto_available): New.
+
+diff --git a/bfd/bfd-in2.h b/bfd/bfd-in2.h
+index 22fcdf6..a84b030 100644
+bfd/
+
+2011-04-06  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR binutils/12639
+	* elfcode.h (elf_slurp_symbol_table): Check valid local symbols.
+
+binutils/
+
+2011-04-06  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR binutils/12639
+	* readelf.c (process_symbol_table): Detect corrupted symtab.
+
+diff --git a/bfd/elfcode.h b/bfd/elfcode.h
+index 28b6b90..c56b4f1 100644
+diff --git a/gas/ChangeLog.x32 b/gas/ChangeLog.x32
+new file mode 100644
+index 0000000..9cbb5b7
