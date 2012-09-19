@@ -506,7 +506,7 @@ class Target_powerpc : public Sized_target<size, big_endian>
     bool issued_non_pic_error_;
   };
 
-  Address
+  typename elfcpp::Elf_types<size>::Elf_Addr
   symval_for_branch(Address value, const Sized_symbol<size>* gsym,
 		    Powerpc_relobj<size, big_endian>* object,
 		    unsigned int *dest_shndx);
