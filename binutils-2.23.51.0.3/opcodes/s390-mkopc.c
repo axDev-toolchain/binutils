@@ -297,7 +297,7 @@ dumpTable (void)
   int  ix;
 
   /*  Write hash table entries (slots).  */
-  printf (file_header);
+  printf ("%s", file_header);
 
   for (ix = 0; ix < no_ops; ix++)
     {
